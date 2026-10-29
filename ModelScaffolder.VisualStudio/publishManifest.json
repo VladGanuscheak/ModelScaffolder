@@ -8,30 +8,9 @@
     "internalName": "ModelScaffolder"
   },
   "overview": "../README.md",
-  "assetFiles": [
-    {
-      "pathOnDisk": "../images/logo.png",
-      "targetPath": "images/logo.png"
-    },
-    {
-      "pathOnDisk": "../images/context-menu.png",
-      "targetPath": "images/context-menu.png"
-    },
-    {
-      "pathOnDisk": "../images/scaffold-dialog.png",
-      "targetPath": "images/scaffold-dialog.png"
-    },
-    {
-      "pathOnDisk": "../images/open-solution.png",
-      "targetPath": "images/open-solution.png"
-    },
-    {
-      "pathOnDisk": "../images/generated-code.png",
-      "targetPath": "images/generated-code.png"
-    }
-  ],
   "priceCategory": "free",
   "publisher": "vladg",
   "private": false,
-  "qna": true
+  "qna": true,
+  "repo": "https://github.com/VladGanuscheak/ModelScaffolder"
 }

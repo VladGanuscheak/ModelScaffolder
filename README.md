@@ -1,4 +1,4 @@
-<img src="images/logo.png" alt="ModelScaffolder logo" width="128" align="right" />
+<img src="https://raw.githubusercontent.com/VladGanuscheak/ModelScaffolder/main/images/logo.png" alt="ModelScaffolder logo" width="128" align="right" />
 
 # ModelScaffolder
 
@@ -9,7 +9,7 @@ after generation.
 
 Right-click a `*.model.json` file in Solution Explorer and choose **Scaffold Solution...**
 
-![The Scaffold Solution command in the context menu of a .model.json file](images/context-menu.png)
+![The Scaffold Solution command in the context menu of a .model.json file](https://raw.githubusercontent.com/VladGanuscheak/ModelScaffolder/main/images/context-menu.png)
 
 ## Features
 
@@ -48,12 +48,12 @@ Right-click a `*.model.json` file in Solution Explorer and choose **Scaffold Sol
    - The user gets every permission of every schema.
    - Only a PBKDF2 hash of the password is written; the password itself is never stored.
 
-   ![The Scaffold Solution dialog](images/scaffold-dialog.png)
+   ![The Scaffold Solution dialog](https://raw.githubusercontent.com/VladGanuscheak/ModelScaffolder/main/images/scaffold-dialog.png)
 4. Click **Generate**. The *ModelScaffolder* pane of the Output window lists the generated files; any problems
    appear in the Error List.
 5. Open the generated `.slnx` when asked, then build and run `dotnet test` (Docker must be running).
 
-   ![Prompt to open the generated solution](images/open-solution.png)
+   ![Prompt to open the generated solution](https://raw.githubusercontent.com/VladGanuscheak/ModelScaffolder/main/images/open-solution.png)
 
 The dialog remembers the output folder, templates folder, target framework and user name for each model file.
 
@@ -175,7 +175,7 @@ tests/
 The code is plain, readable C#. For example, the entity configuration generated from the model's `required`,
 `maxLength` and `unique` settings:
 
-![A generated EF Core entity configuration](images/generated-code.png)
+![A generated EF Core entity configuration](https://raw.githubusercontent.com/VladGanuscheak/ModelScaffolder/main/images/generated-code.png)
 
 Every entity gets these endpoints:
 
@@ -265,3 +265,8 @@ Warnings (MS025, MS033, MS047, MS066) do not stop generation.
 | "'dotnet' was not found" | Install the .NET 10 SDK and restart Visual Studio. |
 | Generated API tests fail to start | Docker must be running (the tests start a PostgreSQL container). |
 | Edits to the model seem ignored | The extension saves the model before generating; check the Error List for problems. |
+
+## Source code and license
+
+Source code, samples and issue tracker: [github.com/VladGanuscheak/ModelScaffolder](https://github.com/VladGanuscheak/ModelScaffolder).
+Released under the [MIT License](https://github.com/VladGanuscheak/ModelScaffolder/blob/main/LICENSE).

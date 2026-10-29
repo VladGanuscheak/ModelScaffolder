@@ -4,9 +4,12 @@
     <Identity Id="ModelScaffolder.VisualStudio.d233648b-71fe-41e5-9a16-4a40a96f2626" Version="1.0.0" Language="en-US" Publisher="Ganușceac Vlad" />
     <DisplayName>ModelScaffolder</DisplayName>
     <Description xml:space="preserve">Scaffolds a layered .NET 10 solution (Domain, Infrastructure, Validation, Policies, Application, Minimal API, tests, Postman collection) from a JSON model. Right-click a *.model.json in Solution Explorer and choose "Scaffold Solution...".</Description>
+    <MoreInfo>https://github.com/VladGanuscheak/ModelScaffolder</MoreInfo>
+    <License>LICENSE.txt</License>
+    <GettingStartedGuide>https://github.com/VladGanuscheak/ModelScaffolder#getting-started</GettingStartedGuide>
     <Icon>Resources\icon.png</Icon>
     <PreviewImage>Resources\preview.png</PreviewImage>
-    <Tags>scaffolding; code generation; minimal api; ef core; handlebars</Tags>
+    <Tags>scaffolding; code generation; minimal api; ef core; entity framework; postgresql; crud; rest api; clean architecture; json; handlebars</Tags>
   </Metadata>
   <Installation>
     <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.14, )">
