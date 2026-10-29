@@ -1,0 +1,76 @@
+{{> header}}
+using System.Text.Json;
+using Microsoft.Extensions.DependencyInjection;
+using RePolicies.Abstractions;
+using RePolicies.AspNetCore;
+using RePolicies.DependencyInjection;
+using RePolicies.Models;
+
+namespace {{schema.namespace}}.Policies;
+
+/// <summary>
+///     Registers RePolicies and loads its policies from Definitions/*.policy.json, one policy per file:
+///     { "model": "Full.Type.Name", "name", "expression", "denialReason", "description" }.
+///     Endpoints opt in with <c>WithPolicyModel&lt;TModel&gt;()</c>; <c>UseRePolicies()</c> enforces them.
+/// </summary>
+public static class PolicyRegistration
+{
+    public const string DefinitionsFolder = "Definitions";
+    public const string FilePattern = "*.policy.json";
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true
+    };
+
+    /// <summary>Registers the policy engine and HTTP enforcement. Call after <c>AddReValidator()</c>.</summary>
+    public static IServiceCollection Add{{schema.name}}Policies(this IServiceCollection services)
+    {
+        services.AddRePolicies(registerReValidator: false);
+        services.AddRePoliciesHttp();
+        return services;
+    }
+
+    /// <summary>Loads every policy file and applies it through <see cref="IPolicyReconfigurator"/>. Call after the app is built.</summary>
+    public static IServiceProvider Apply{{schema.name}}Policies(this IServiceProvider services, string? folder = null)
+    {
+        folder ??= Path.Combine(AppContext.BaseDirectory, DefinitionsFolder);
+        var reconfigurator = services.GetRequiredService<IPolicyReconfigurator>();
+
+        foreach (var file in Directory.EnumerateFiles(folder, FilePattern).Order(StringComparer.Ordinal))
+        {
+            var policy = JsonSerializer.Deserialize<PolicyFile>(File.ReadAllText(file), JsonOptions)
+                         ?? throw new InvalidOperationException($"Policy file '{file}' is empty.");
+
+            var modelType = ResolveType(policy.Model)
+                            ?? throw new InvalidOperationException($"Policy file '{file}': type '{policy.Model}' not found.");
+
+            // Policies are evaluated against Policy<TModel> (Model, User, HasClaim, ...), not against the DTO itself.
+            reconfigurator.Configure(typeof(Policy<>).MakeGenericType(modelType), new PolicyDefinition
+            {
+                Name = policy.Name,
+                Expression = policy.Expression,
+                DenialReason = policy.DenialReason,
+                Description = policy.Description
+            });
+        }
+
+        return services;
+    }
+
+    private static Type? ResolveType(string fullName) =>
+        AppDomain.CurrentDomain.GetAssemblies()
+            .Select(assembly => assembly.GetType(fullName))
+            .FirstOrDefault(type => type is not null);
+
+    private sealed class PolicyFile
+    {
+        public string Model { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Expression { get; set; } = string.Empty;
+        public string DenialReason { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+    }
+}

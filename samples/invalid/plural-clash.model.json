@@ -1,0 +1,15 @@
+// expect: MS015
+// The plural names a namespace, the route and the DbSet: "Person" and "Human" both pluralize to "People".
+{
+  "version": 1,
+  "project": { "name": "Plurals" },
+  "schemas": [
+    {
+      "name": "Contacts",
+      "entities": [
+        { "name": "Person", "plural": "People", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] },
+        { "name": "Human", "plural": "People", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "Generate Store sample": {
+      "commandName": "Project",
+      "commandLineArgs": "..\\samples\\store.model.json -o ..\\..\\out\\Store --force",
+      "workingDirectory": "$(ProjectDir)"
+    },
+    "Dry run": {
+      "commandName": "Project",
+      "commandLineArgs": "..\\samples\\store.model.json -o ..\\..\\out\\Store --dry-run",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}

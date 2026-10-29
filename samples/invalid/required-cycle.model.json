@@ -1,0 +1,19 @@
+// expect: MS048
+// Order requires Invoice and Invoice requires Order: neither row could ever be inserted first.
+{
+  "version": 1,
+  "project": { "name": "Cycle" },
+  "schemas": [
+    {
+      "name": "Billing",
+      "entities": [
+        { "name": "Order", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] },
+        { "name": "Invoice", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] }
+      ],
+      "relationships": [
+        { "type": "many-to-one", "from": "Order", "to": "Invoice", "required": true },
+        { "type": "many-to-one", "from": "Invoice", "to": "Order", "required": true }
+      ]
+    }
+  ]
+}

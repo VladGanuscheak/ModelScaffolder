@@ -1,0 +1,17 @@
+{{> header}}
+namespace {{schema.namespace}}.Domain.Entities;
+
+public class {{name}}
+{
+{{#each properties}}
+    public {{clrType}} {{name}} { get; set; }{{initializer}}
+{{/each}}
+{{#each references}}
+
+    public {{target}}{{#unless isRequired}}?{{/unless}} {{navigation}} { get; set; }{{#if isRequired}} = null!;{{/if}}
+{{/each}}
+{{#each collections}}
+
+    public ICollection<{{target}}> {{navigation}} { get; set; } = [];
+{{/each}}
+}

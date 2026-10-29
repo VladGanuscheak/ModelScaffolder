@@ -1,0 +1,46 @@
+{{> header}}
+using GenericRepository.Interfaces;
+using GenericRepository.Services.EFCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
+using {{schema.namespace}}.Infrastructure.Persistence;
+
+namespace {{schema.namespace}}.Infrastructure;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
+    {
+        services.AddDbContext<{{schema.dbContext}}>(options => options.UseNpgsql(connectionString));
+
+        // GenericAsyncDatabaseRepository<T> takes the base DbContext; expose {{schema.dbContext}} as DbContext.
+        services.AddScoped<DbContext>(sp => sp.GetRequiredService<{{schema.dbContext}}>());
+        services.AddScoped(typeof(IGenericAsyncRepository<>), typeof(GenericAsyncDatabaseRepository<>));
+        return services;
+    }
+
+    /// <summary>
+    ///     Creates the database and this slice's tables if missing. Development only; use EF migrations for real deployments.
+    ///     Slices share one database, so EnsureCreated (which skips existing databases) is not enough.
+    /// </summary>
+    public static async Task EnsureDatabaseCreatedAsync(this IServiceProvider services)
+    {
+        await using var scope = services.CreateAsyncScope();
+        var creator = scope.ServiceProvider.GetRequiredService<{{schema.dbContext}}>().GetService<IRelationalDatabaseCreator>();
+
+        if (!await creator.ExistsAsync())
+            await creator.CreateAsync();
+
+        try
+        {
+            await creator.CreateTablesAsync();
+        }
+        catch (PostgresException ex) when (ex.SqlState == PostgresErrorCodes.DuplicateTable)
+        {
+            // Tables of this slice already exist.
+        }
+    }
+}

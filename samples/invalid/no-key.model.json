@@ -1,0 +1,13 @@
+// expect: MS031
+{
+  "version": 1,
+  "project": { "name": "NoKey" },
+  "schemas": [
+    {
+      "name": "Sales",
+      "entities": [
+        { "name": "Order", "properties": [ { "name": "Number", "type": "string", "required": true } ] }
+      ]
+    }
+  ]
+}

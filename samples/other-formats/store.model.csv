@@ -1,0 +1,4 @@
+# expect: MS000
+entity,property,type,key,required,maxLength
+Category,Id,int,true,true,
+Category,Name,string,false,true,100

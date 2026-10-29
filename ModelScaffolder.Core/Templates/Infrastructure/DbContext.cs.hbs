@@ -1,0 +1,21 @@
+{{> header}}
+using Microsoft.EntityFrameworkCore;
+using {{schema.namespace}}.Domain.Entities;
+
+namespace {{schema.namespace}}.Infrastructure.Persistence;
+
+public sealed class {{schema.dbContext}}(DbContextOptions<{{schema.dbContext}}> options) : DbContext(options)
+{
+    /// <summary>Database schema that holds this slice's tables.</summary>
+    public const string Schema = "{{schema.dbSchema}}";
+
+{{#each schema.entities}}
+    public DbSet<{{name}}> {{plural}} { get; set; } = null!;
+{{/each}}
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.HasDefaultSchema(Schema);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof({{schema.dbContext}}).Assembly);
+    }
+}

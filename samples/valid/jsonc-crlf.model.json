@@ -1,0 +1,33 @@
+// expect: success
+/* JSON with comments (JSONC): line and block comments, trailing commas, CRLF line endings.
+   The model reader accepts all of these. */
+{
+  "version": 1,
+  "project": { "name": "Library", },
+  "schemas": [
+    {
+      "name": "Lending",
+      "entities": [
+        {
+          "name": "Book", // a book in the catalogue
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true, },
+            { "name": "Isbn", "type": "string", "required": true, "minLength": 10, "maxLength": 13, "unique": true, },
+            { "name": "Title", "type": "string", "required": true, "maxLength": 300, },
+          ],
+        },
+        {
+          "name": "Loan",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "LentOn", "type": "DateOnly", "required": true },
+            { "name": "ReturnedOn", "type": "DateOnly" }, /* null while lent out */
+          ],
+        },
+      ],
+      "relationships": [
+        { "type": "one-to-many", "from": "Book", "to": "Loan", "inverseNavigation": "Loans", "required": true, },
+      ],
+    },
+  ],
+}

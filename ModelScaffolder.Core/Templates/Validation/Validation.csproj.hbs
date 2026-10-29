@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="ReValidator" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- One file per entity, copied next to the API binaries (Rules/*.json); edit there to change rules without recompiling. -->
+    <None Include="Rules/*-rules.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

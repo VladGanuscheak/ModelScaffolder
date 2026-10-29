@@ -1,0 +1,17 @@
+// expect: MS042
+// "Customer" is not an entity of this schema (relationships cannot cross schemas).
+{
+  "version": 1,
+  "project": { "name": "Orphan" },
+  "schemas": [
+    {
+      "name": "Sales",
+      "entities": [
+        { "name": "Order", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] }
+      ],
+      "relationships": [
+        { "type": "many-to-one", "from": "Order", "to": "Customer", "required": true }
+      ]
+    }
+  ]
+}

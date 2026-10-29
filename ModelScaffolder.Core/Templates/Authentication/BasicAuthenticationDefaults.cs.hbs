@@ -1,0 +1,10 @@
+{{> header}}
+namespace Authentication.Basic;
+
+public static class BasicAuthenticationDefaults
+{
+    public const string SchemeName = "Basic";
+
+    /// <summary>Default claim type for user permissions.</summary>
+    public const string PermissionClaimType = "permission";
+}

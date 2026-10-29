@@ -1,0 +1,31 @@
+{{> header}}
+using {{schema.namespace}}.Domain.Entities;
+
+namespace {{schema.namespace}}.Policies.Permissions;
+
+/// <summary>Permission claims for <see cref="{{name}}"/>.</summary>
+public static class {{name}}Permissions
+{
+    public const string Get = $"{nameof(Get)}.{ {{~schema.name}}Permissions.Schema}.{nameof({{name}})}";
+    public const string Create = $"{nameof(Create)}.{ {{~schema.name}}Permissions.Schema}.{nameof({{name}})}";
+    public const string Update = $"{nameof(Update)}.{ {{~schema.name}}Permissions.Schema}.{nameof({{name}})}";
+    public const string Delete = $"{nameof(Delete)}.{ {{~schema.name}}Permissions.Schema}.{nameof({{name}})}";
+
+    public static IReadOnlyList<string> All { get; } = [Get, Create, Update, Delete];
+}
+
+/// <summary>
+///     Policy model for reading <see cref="{{name}}"/> (GET endpoints, marked with <c>WithPolicyModel&lt;Get{{name}}Request&gt;()</c>).
+///     GET has no body, so <c>x.Model</c> is null when its policies run: use the request context (claims, route, query) only.
+/// </summary>
+public sealed class Get{{name}}Request
+{
+}
+
+/// <summary>
+///     Policy model for deleting a <see cref="{{name}}"/> (DELETE endpoint). No body, so <c>x.Model</c> is null:
+///     use the request context only, e.g. <c>x.Route("id")</c>.
+/// </summary>
+public sealed class Delete{{name}}Request
+{
+}

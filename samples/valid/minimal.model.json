@@ -1,0 +1,20 @@
+// expect: success
+// The smallest useful model: one schema, one entity.
+{
+  "version": 1,
+  "project": { "name": "Minimal" },
+  "schemas": [
+    {
+      "name": "Notebook",
+      "entities": [
+        {
+          "name": "Note",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "Text", "type": "string", "required": true, "maxLength": 500 }
+          ]
+        }
+      ]
+    }
+  ]
+}

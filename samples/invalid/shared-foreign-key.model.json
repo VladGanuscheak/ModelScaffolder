@@ -1,0 +1,19 @@
+// expect: MS046
+// Two relationships from Shipment to Address both default to the foreign key "AddressId".
+{
+  "version": 1,
+  "project": { "name": "Shipping" },
+  "schemas": [
+    {
+      "name": "Logistics",
+      "entities": [
+        { "name": "Address", "plural": "Addresses", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] },
+        { "name": "Shipment", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] }
+      ],
+      "relationships": [
+        { "type": "many-to-one", "from": "Shipment", "to": "Address", "navigation": "Origin", "required": true },
+        { "type": "many-to-one", "from": "Shipment", "to": "Address", "navigation": "Destination", "required": true }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+// expect: MS008
+// A stray null in a list (e.g. left over from editing) and a null list.
+{
+  "version": 1,
+  "project": { "name": "Nulls" },
+  "schemas": [
+    {
+      "name": "Sales",
+      "entities": [
+        { "name": "Order", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true }, null ] },
+        null
+      ],
+      "relationships": null
+    }
+  ]
+}

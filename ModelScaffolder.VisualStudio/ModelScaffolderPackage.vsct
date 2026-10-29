@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <Extern href="stdidcmd.h" />
+  <Extern href="vsshlids.h" />
+
+  <Commands package="guidModelScaffolderPackage">
+    <Groups>
+      <!-- Solution Explorer context menu of a file (project items and solution items). -->
+      <Group guid="guidModelScaffolderCmdSet" id="ItemContextGroup" priority="0x0100">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_ITEMNODE" />
+      </Group>
+    </Groups>
+
+    <Buttons>
+      <Button guid="guidModelScaffolderCmdSet" id="ScaffoldSolutionCommand" priority="0x0100" type="Button">
+        <Parent guid="guidModelScaffolderCmdSet" id="ItemContextGroup" />
+        <CommandFlag>DefaultInvisible</CommandFlag>
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <Strings>
+          <ButtonText>Scaffold Solution...</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+  </Commands>
+
+  <!-- Shown only for *.model.json, without loading the package (see ProvideUIContextRule on the package). -->
+  <VisibilityConstraints>
+    <VisibilityItem guid="guidModelScaffolderCmdSet" id="ScaffoldSolutionCommand" context="guidModelFileSelectedContext" />
+  </VisibilityConstraints>
+
+  <Symbols>
+    <GuidSymbol name="guidModelScaffolderPackage" value="{e0d0c8b6-39ad-44e3-ac49-42daeda86b11}" />
+    <GuidSymbol name="guidModelFileSelectedContext" value="{cfb245fe-2de2-447b-8cc7-a0fa755d8cf8}" />
+    <GuidSymbol name="guidModelScaffolderCmdSet" value="{8a1bab11-7afc-4c93-b6a9-06cb3f05ed9d}">
+      <IDSymbol name="ItemContextGroup" value="0x1020" />
+      <IDSymbol name="ScaffoldSolutionCommand" value="0x0100" />
+    </GuidSymbol>
+  </Symbols>
+
+</CommandTable>

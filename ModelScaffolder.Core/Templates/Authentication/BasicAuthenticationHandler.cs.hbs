@@ -1,0 +1,74 @@
+{{> header}}
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace Authentication.Basic;
+
+/// <summary>
+///     HTTP Basic authentication against <see cref="UserStoreOptions"/>. Each user's permissions become claims of type
+///     <see cref="BasicAuthenticationOptions.PermissionClaimType"/>. Basic sends the password with every request: use HTTPS.
+/// </summary>
+public sealed class BasicAuthenticationHandler(
+    IOptionsMonitor<BasicAuthenticationOptions> options,
+    ILoggerFactory logger,
+    UrlEncoder encoder,
+    IOptionsMonitor<UserStoreOptions> users)
+    : AuthenticationHandler<BasicAuthenticationOptions>(options, logger, encoder)
+{
+    protected override Task<AuthenticateResult> HandleAuthenticateAsync()
+    {
+        if (!AuthenticationHeaderValue.TryParse(Request.Headers.Authorization, out var header)
+            || !string.Equals(header.Scheme, BasicAuthenticationDefaults.SchemeName, StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrEmpty(header.Parameter))
+        {
+            return Task.FromResult(AuthenticateResult.NoResult());
+        }
+
+        if (!TryDecode(header.Parameter, out var userName, out var password))
+            return Task.FromResult(AuthenticateResult.Fail("Malformed Basic credentials."));
+
+        var user = users.CurrentValue.Users.FirstOrDefault(u => string.Equals(u.UserName, userName, StringComparison.OrdinalIgnoreCase));
+        if (user is null || !PasswordHash.Verify(password, user.PasswordHash))
+            return Task.FromResult(AuthenticateResult.Fail("Invalid user name or password."));
+
+        Claim[] claims =
+        [
+            new(ClaimTypes.Name, user.UserName),
+            .. user.Permissions.Select(permission => new Claim(Options.PermissionClaimType, permission))
+        ];
+
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, Scheme.Name));
+        return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(principal, Scheme.Name)));
+    }
+
+    protected override Task HandleChallengeAsync(AuthenticationProperties properties)
+    {
+        Response.Headers.WWWAuthenticate = $"{BasicAuthenticationDefaults.SchemeName} realm=\"{Options.Realm}\", charset=\"UTF-8\"";
+        return base.HandleChallengeAsync(properties);
+    }
+
+    private static bool TryDecode(string parameter, out string userName, out string password)
+    {
+        userName = password = string.Empty;
+        try
+        {
+            var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(parameter));
+            var separator = decoded.IndexOf(':');
+            if (separator <= 0)
+                return false;
+
+            userName = decoded[..separator];
+            password = decoded[(separator + 1)..];
+            return true;
+        }
+        catch (FormatException)
+        {
+            return false;
+        }
+    }
+}

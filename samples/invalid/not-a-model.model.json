@@ -1,0 +1,8 @@
+// expect: MS000
+// Valid JSON, but a package.json instead of a model.
+{
+  "name": "my-app",
+  "version": "1.0.0",
+  "scripts": { "build": "tsc" },
+  "dependencies": { "react": "^19.0.0" }
+}

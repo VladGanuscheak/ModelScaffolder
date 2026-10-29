@@ -1,0 +1,18 @@
+{{> header}}
+using Microsoft.Extensions.DependencyInjection;
+{{#each schema.entities}}
+using {{../schema.namespace}}.Application.{{plural}};
+{{/each}}
+
+namespace {{schema.namespace}}.Application;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+{{#each schema.entities}}
+        services.AddScoped<I{{name}}Service, {{name}}Service>();
+{{/each}}
+        return services;
+    }
+}

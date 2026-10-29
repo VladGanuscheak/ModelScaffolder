@@ -1,0 +1,7 @@
+{
+  "model": "{{model}}",
+  "name": "HasPermission",
+  "expression": "x => x.HasClaim(\"permission\", \"{{action}}.{{schema.name}}.{{name}}\")",
+  "denialReason": "The '{{action}}.{{schema.name}}.{{name}}' permission is required.",
+  "description": "{{action}} {{name}}: requires the '{{action}}.{{schema.name}}.{{name}}' permission claim."
+}

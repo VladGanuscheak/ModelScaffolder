@@ -1,0 +1,21 @@
+{{> header}}
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Authentication.Basic;
+
+public static class ServiceCollectionExtensions
+{
+    /// <summary>Adds Basic authentication as the default scheme, with users bound from <paramref name="users"/>.</summary>
+    public static AuthenticationBuilder AddBasicAuthentication(
+        this IServiceCollection services,
+        IConfiguration users,
+        Action<BasicAuthenticationOptions>? configure = null)
+    {
+        services.Configure<UserStoreOptions>(users);
+        return services
+            .AddAuthentication(BasicAuthenticationDefaults.SchemeName)
+            .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(BasicAuthenticationDefaults.SchemeName, configure);
+    }
+}

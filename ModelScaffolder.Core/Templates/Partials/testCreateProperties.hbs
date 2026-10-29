@@ -1,0 +1,5 @@
+{{#each createProperties}}
+{{#unless isForeignKey}}
+        {{name}} = {{apiTestValue}},
+{{/unless}}
+{{/each}}

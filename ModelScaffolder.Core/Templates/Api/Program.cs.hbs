@@ -1,0 +1,50 @@
+{{> header}}
+using Authentication.Basic;
+using RePolicies.AspNetCore;
+using ReValidator;
+using {{schema.namespace}}.Api.Endpoints;
+using {{schema.namespace}}.Application;
+using {{schema.namespace}}.Infrastructure;
+using {{schema.namespace}}.Policies;
+using {{schema.namespace}}.Validation;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddOpenApi();
+
+builder.Services.AddBasicAuthentication(
+    builder.Configuration.GetSection(UserStoreOptions.SectionName),
+    options =>
+    {
+        options.Realm = {{schema.name}}Permissions.Schema;
+        options.PermissionClaimType = {{schema.name}}Permissions.ClaimType;
+    });
+builder.Services.AddAuthorization();
+
+builder.Services.AddReValidator();
+builder.Services.Add{{schema.name}}Policies();
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(
+    builder.Configuration.GetConnectionString("Default")
+    ?? throw new InvalidOperationException("Connection string 'Default' is not configured."));
+
+var app = builder.Build();
+
+app.Services.ApplyValidationRules();
+app.Services.Apply{{schema.name}}Policies();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    await app.Services.EnsureDatabaseCreatedAsync();
+}
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseRePolicies(); // enforces the policies of endpoints marked with WithPolicyModel<TModel>()
+
+{{#each schema.entities}}
+app.Map{{name}}Endpoints();
+{{/each}}
+
+app.Run();

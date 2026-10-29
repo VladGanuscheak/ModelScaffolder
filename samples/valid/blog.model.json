@@ -1,0 +1,62 @@
+// expect: success
+// A blog: required and optional relationships, a self-reference (comment replies),
+// unique strings, Guid/int/long keys and an entity without relationships.
+{
+  "version": 1,
+  "project": { "name": "Blog" },
+  "schemas": [
+    {
+      "name": "Publishing",
+      "entities": [
+        {
+          "name": "Author",
+          "properties": [
+            { "name": "Id", "type": "Guid", "key": true, "generated": true },
+            { "name": "DisplayName", "type": "string", "required": true, "maxLength": 100, "unique": true },
+            { "name": "Email", "type": "string", "maxLength": 320, "unique": true }
+          ]
+        },
+        {
+          "name": "Post",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "Title", "type": "string", "required": true, "maxLength": 200 },
+            { "name": "Slug", "type": "string", "required": true, "minLength": 3, "maxLength": 200, "unique": true },
+            { "name": "Body", "type": "string" },
+            { "name": "PublishedAt", "type": "DateTimeOffset" },
+            { "name": "IsDraft", "type": "bool", "required": true }
+          ]
+        },
+        {
+          "name": "Comment",
+          "properties": [
+            { "name": "Id", "type": "long", "key": true, "generated": true },
+            { "name": "Text", "type": "string", "required": true, "maxLength": 2000 },
+            { "name": "PostedAt", "type": "DateTime", "required": true }
+          ]
+        },
+        {
+          "name": "Tag",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "Name", "type": "string", "required": true, "maxLength": 50, "unique": true }
+          ]
+        }
+      ],
+      "relationships": [
+        { "type": "many-to-one", "from": "Post", "to": "Author", "inverseNavigation": "Posts", "required": true, "onDelete": "Cascade" },
+        { "type": "many-to-one", "from": "Comment", "to": "Post", "inverseNavigation": "Comments", "required": true, "onDelete": "Cascade" },
+        { "type": "many-to-one", "from": "Comment", "to": "Author", "inverseNavigation": "Comments", "onDelete": "SetNull" },
+        {
+          "type": "many-to-one",
+          "from": "Comment",
+          "to": "Comment",
+          "foreignKey": "ParentCommentId",
+          "navigation": "ParentComment",
+          "inverseNavigation": "Replies",
+          "onDelete": "Restrict"
+        }
+      ]
+    }
+  ]
+}

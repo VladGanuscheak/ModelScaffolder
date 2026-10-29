@@ -1,0 +1,20 @@
+// expect: MS000
+// "required" must be true/false, not a string; "maxLength" must be a number.
+{
+  "version": 1,
+  "project": { "name": "WrongTypes" },
+  "schemas": [
+    {
+      "name": "Sales",
+      "entities": [
+        {
+          "name": "Order",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "Number", "type": "string", "required": "yes", "maxLength": "30" }
+          ]
+        }
+      ]
+    }
+  ]
+}

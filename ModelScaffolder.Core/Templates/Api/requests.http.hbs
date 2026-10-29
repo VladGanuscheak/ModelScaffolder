@@ -1,0 +1,61 @@
+# {{schema.name}} API: Visual Studio HTTP client requests. Run them top to bottom ("Send request" above each ###):
+# creates first (ids are reused through named requests), then reads, updates, negative cases and deletes.
+#
+# Set @credentials to Base64("user:password") of a configured user, e.g. in PowerShell:
+#   [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes("{{project.systemUserName}}:your-password"))
+# Do not commit real credentials.
+
+@baseUrl = http://localhost:{{schema.port}}
+@credentials =
+
+{{#each schema.entitiesInDependencyOrder}}
+### Create {{name}}
+# @name create{{name}}
+POST {{pm "baseUrl"}}/api/{{route}}
+Authorization: Basic {{pm "credentials"}}
+Content-Type: application/json
+
+{{httpCreateBody}}
+
+{{/each}}
+{{#each schema.entities}}
+### List {{plural}} sorted by {{sortSample}} (desc)
+GET {{pm "baseUrl"}}/api/{{route}}?sortBy={{sortSample}}&order=Desc
+Authorization: Basic {{pm "credentials"}}
+
+### Get {{name}}
+GET {{pm "baseUrl"}}/api/{{route}}/{{pm "create" name ".response.body.$." key.camelName}}
+Authorization: Basic {{pm "credentials"}}
+
+### Update {{name}}
+PUT {{pm "baseUrl"}}/api/{{route}}/{{pm "create" name ".response.body.$." key.camelName}}
+Authorization: Basic {{pm "credentials"}}
+Content-Type: application/json
+
+{{httpUpdateBody}}
+
+{{/each}}
+### Without credentials -> 401
+GET {{pm "baseUrl"}}/api/{{#each schema.entities}}{{#if @first}}{{route}}{{/if}}{{/each}}
+
+{{#each schema.entities}}
+{{#if createRules}}
+### Create {{name}} with invalid body -> 422
+POST {{pm "baseUrl"}}/api/{{route}}
+Authorization: Basic {{pm "credentials"}}
+Content-Type: application/json
+
+{}
+
+{{/if}}
+{{/each}}
+{{#each schema.entitiesInReverseDependencyOrder}}
+### Delete {{name}} -> 204
+DELETE {{pm "baseUrl"}}/api/{{route}}/{{pm "create" name ".response.body.$." key.camelName}}
+Authorization: Basic {{pm "credentials"}}
+
+### Get deleted {{name}} -> 404
+GET {{pm "baseUrl"}}/api/{{route}}/{{pm "create" name ".response.body.$." key.camelName}}
+Authorization: Basic {{pm "credentials"}}
+
+{{/each}}

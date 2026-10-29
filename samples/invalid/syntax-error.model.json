@@ -1,0 +1,7 @@
+// expect: MS000
+// A missing comma after "version": 1. The error is reported where the comma is missing (line 5).
+{
+  "version": 1
+  "project": { "name": "Broken" },
+  "schemas": []
+}

@@ -1,0 +1,28 @@
+{
+  "ConnectionStrings": {
+    "Default": {{json project.connectionString}}
+  },
+  "Authentication": {
+    "Users": [
+      {
+        "UserName": {{json project.systemUserName}},
+        "PasswordHash": {{json project.systemUserPasswordHash}},
+        "Permissions": [
+{{#each schema.entities}}
+          "Get.{{../schema.name}}.{{name}}",
+          "Create.{{../schema.name}}.{{name}}",
+          "Update.{{../schema.name}}.{{name}}",
+          "Delete.{{../schema.name}}.{{name}}"{{#unless @last}},{{/unless}}
+{{/each}}
+        ]
+      }
+    ]
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}

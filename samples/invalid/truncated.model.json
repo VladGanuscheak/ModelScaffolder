@@ -1,0 +1,10 @@
+// expect: MS000
+// The file ends in the middle of an object (e.g. an interrupted save).
+{
+  "version": 1,
+  "project": { "name": "Truncated" },
+  "schemas": [
+    {
+      "name": "Sales",
+      "entities": [
+        { "name": "Order", "properties": [ { "name": "Id", "type": "int",

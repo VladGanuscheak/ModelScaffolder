@@ -1,0 +1,185 @@
+{{> header}}
+using System.Linq.Expressions;
+using GenericRepository.Enums;
+using GenericRepository.Interfaces;
+using GenericRepository.Options;
+using {{schema.namespace}}.Application.{{plural}};
+using {{schema.namespace}}.Domain.Entities;
+
+namespace {{schema.namespace}}.Application.Tests;
+
+public sealed class {{name}}ServiceTests
+{
+    private static readonly {{key.clrType}} ExistingId = {{key.testValue}};
+
+    private readonly IGenericAsyncRepository<{{name}}> _repository = Substitute.For<IGenericAsyncRepository<{{name}}>>();
+    private readonly {{name}}Service _service;
+
+    public {{name}}ServiceTests() => _service = new {{name}}Service(_repository);
+
+    // ---------- List ----------
+
+    [Fact]
+    public async Task ListAsync_ReturnsItemsFromRepository()
+    {
+        IEnumerable<{{name}}Response> items = [new() { {{key.name}} = ExistingId }];
+        _repository.ListAsync(Arg.Any<ComplexDataModelOptions<{{name}}, {{name}}Response>>(), Arg.Any<CancellationToken>())
+            .Returns(items);
+
+        var result = await _service.ListAsync();
+
+        var item = Assert.Single(result);
+        Assert.Equal(ExistingId, item.{{key.name}});
+    }
+
+    [Fact]
+    public async Task ListAsync_WithoutSortBy_SortsByKeyAscending()
+    {
+        await _service.ListAsync();
+
+        await _repository.Received(1).ListAsync(
+            Arg.Is<ComplexDataModelOptions<{{name}}, {{name}}Response>>(options =>
+                options.SortingFieldName == nameof({{name}}.{{key.name}}) && options.SortingOrder == SortingOrder.Asc),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ListAsync_ResolvesSortFieldCaseInsensitively()
+    {
+        await _service.ListAsync("{{sortSample}}", SortingOrder.Desc);
+
+        await _repository.Received(1).ListAsync(
+            Arg.Is<ComplexDataModelOptions<{{name}}, {{name}}Response>>(options =>
+                options.SortingFieldName == nameof({{name}}.{{sortSampleName}}) && options.SortingOrder == SortingOrder.Desc),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task ListAsync_WithUnknownSortField_Throws()
+    {
+        await Assert.ThrowsAsync<ArgumentException>(() => _service.ListAsync("doesNotExist"));
+    }
+
+    // ---------- Get ----------
+
+    [Fact]
+    public async Task GetAsync_WhenFound_ReturnsItem()
+    {
+        _repository.GetAsync(Arg.Any<ComplexDataModelOptions<{{name}}, {{name}}Response>>(), Arg.Any<CancellationToken>())
+            .Returns(new {{name}}Response { {{key.name}} = ExistingId });
+
+        var result = await _service.GetAsync(ExistingId);
+
+        Assert.NotNull(result);
+        Assert.Equal(ExistingId, result.{{key.name}});
+    }
+
+    [Fact]
+    public async Task GetAsync_WhenMissing_ReturnsNull()
+    {
+        _repository.GetAsync(Arg.Any<ComplexDataModelOptions<{{name}}, {{name}}Response>>(), Arg.Any<CancellationToken>())
+            .Returns(({{name}}Response)null!);
+
+        var result = await _service.GetAsync(ExistingId);
+
+        Assert.Null(result);
+    }
+
+    // ---------- Create ----------
+
+    [Fact]
+    public async Task CreateAsync_StoresMappedEntity_AndReturnsIt()
+    {
+        var request = new Create{{name}}Request
+        {
+{{#each createProperties}}
+            {{name}} = {{testValue}},
+{{/each}}
+        };
+
+        var result = await _service.CreateAsync(request);
+
+        await _repository.Received(1).CreateAsync(
+            Arg.Is<{{name}}>(entity =>
+{{#each createProperties}}
+                entity.{{name}} == request.{{name}}{{#unless @last}} &&{{/unless}}
+{{/each}}
+            ),
+            Arg.Any<CancellationToken>());
+{{#each createProperties}}
+        Assert.Equal(request.{{name}}, result.{{name}});
+{{/each}}
+    }
+
+    // ---------- Update ----------
+
+    [Fact]
+    public async Task UpdateAsync_WhenFound_AppliesChanges()
+    {
+        _repository.GetAsync(Arg.Any<DataModelOptions<{{name}}>>(), Arg.Any<CancellationToken>())
+            .Returns(new {{name}}
+            {
+                {{key.name}} = ExistingId,
+{{#each updateProperties}}
+                {{name}} = {{testValue}},
+{{/each}}
+            });
+        var request = new Update{{name}}Request
+        {
+{{#each updateProperties}}
+            {{name}} = {{testUpdatedValue}},
+{{/each}}
+        };
+
+        var result = await _service.UpdateAsync(ExistingId, request);
+
+        Assert.NotNull(result);
+        Assert.Equal(ExistingId, result.{{key.name}});
+{{#each updateProperties}}
+        Assert.Equal(request.{{name}}, result.{{name}});
+{{/each}}
+        await _repository.Received(1).UpdateAsync(
+            Arg.Any<Expression<Func<{{name}}, bool>>>(),
+            Arg.Is<{{name}}>(entity => entity.{{key.name}} == ExistingId),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task UpdateAsync_WhenMissing_ReturnsNull_AndDoesNotUpdate()
+    {
+        _repository.GetAsync(Arg.Any<DataModelOptions<{{name}}>>(), Arg.Any<CancellationToken>())
+            .Returns(({{name}})null!);
+
+        var result = await _service.UpdateAsync(ExistingId, new Update{{name}}Request());
+
+        Assert.Null(result);
+        await _repository.DidNotReceive().UpdateAsync(
+            Arg.Any<Expression<Func<{{name}}, bool>>>(), Arg.Any<{{name}}>(), Arg.Any<CancellationToken>());
+    }
+
+    // ---------- Delete ----------
+
+    [Fact]
+    public async Task DeleteAsync_WhenFound_DeletesAndReturnsTrue()
+    {
+        _repository.GetAsync(Arg.Any<ComplexDataModelOptions<{{name}}, {{name}}Response>>(), Arg.Any<CancellationToken>())
+            .Returns(new {{name}}Response { {{key.name}} = ExistingId });
+
+        var deleted = await _service.DeleteAsync(ExistingId);
+
+        Assert.True(deleted);
+        await _repository.Received(1).DeleteAsync(Arg.Any<Expression<Func<{{name}}, bool>>>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task DeleteAsync_WhenMissing_ReturnsFalse_AndDoesNotDelete()
+    {
+        _repository.GetAsync(Arg.Any<ComplexDataModelOptions<{{name}}, {{name}}Response>>(), Arg.Any<CancellationToken>())
+            .Returns(({{name}}Response)null!);
+
+        var deleted = await _service.DeleteAsync(ExistingId);
+
+        Assert.False(deleted);
+        await _repository.DidNotReceive().DeleteAsync(Arg.Any<Expression<Func<{{name}}, bool>>>(), Arg.Any<CancellationToken>());
+    }
+}

@@ -1,0 +1,6 @@
+# expect: MS000
+# YAML saved with a .model.json name: the menu appears, generation reports invalid JSON on line 1.
+version: 1
+project:
+  name: Store
+schemas: []

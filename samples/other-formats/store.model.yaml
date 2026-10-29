@@ -1,0 +1,14 @@
+# expect: MS000
+# The Store model written as YAML. Only JSON is supported: the extension's menu does not even appear for this
+# file (it must end with .model.json); the CLI reports it as invalid JSON.
+version: 1
+project:
+  name: Store
+schemas:
+  - name: Store
+    entities:
+      - name: Category
+        plural: Categories
+        properties:
+          - { name: Id, type: int, key: true, generated: true }
+          - { name: Name, type: string, required: true, maxLength: 100 }

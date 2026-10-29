@@ -1,0 +1,66 @@
+{{> header}}
+using System.Globalization;
+using System.Net.Http.Json;
+{{#each schema.entities}}
+using {{../schema.namespace}}.Application.{{plural}};
+{{/each}}
+
+namespace {{schema.namespace}}.Api.Tests;
+
+/// <summary>
+///     Valid requests built from the model's constraints, and helpers that create items (and their parents) through the API.
+///     Self-references and optional back-references are left null so creating sample data never recurses.
+/// </summary>
+public static class TestData
+{
+    private static int _counter;
+
+    /// <summary>Makes a value unique within the test run while respecting the property's maximum length.</summary>
+    public static string Unique(string value, int maxLength)
+    {
+        var text = $"{value} {Interlocked.Increment(ref _counter).ToString(CultureInfo.InvariantCulture)}";
+        return text.Length <= maxLength ? text : text[^maxLength..];
+    }
+
+    /// <summary>A new number on every call: values for unique properties and client-assigned keys.</summary>
+    public static int NextNumber() => Interlocked.Increment(ref _counter);
+{{#each schema.entitiesInDependencyOrder}}
+
+    // ---------- {{name}} ----------
+
+    public const string {{name}}Route = "/api/{{route}}";
+
+{{#if sampleReferences}}
+    public static async Task<Create{{name}}Request> New{{name}}RequestAsync(HttpClient client) => new()
+    {
+{{> testCreateProperties}}
+{{#each sampleReferences}}
+        {{foreignKey}} = (await Create{{target}}Async(client)).{{targetKey}},
+{{/each}}
+    };
+{{else}}
+    public static Create{{name}}Request New{{name}}Request() => new()
+    {
+{{> testCreateProperties}}
+    };
+{{/if}}
+
+    public static Update{{name}}Request Update{{name}}Request({{#if references}}{{name}}Response current{{/if}}) => new()
+    {
+{{#each updateProperties}}
+{{#if isForeignKey}}
+        {{name}} = current.{{name}},
+{{else}}
+        {{name}} = {{apiTestUpdatedValue}},
+{{/if}}
+{{/each}}
+    };
+
+    public static async Task<{{name}}Response> Create{{name}}Async(HttpClient client)
+    {
+        var response = await client.PostAsJsonAsync({{name}}Route, {{#if sampleReferences}}await New{{name}}RequestAsync(client){{else}}New{{name}}Request(){{/if}});
+        response.EnsureSuccessStatusCode();
+        return (await response.Content.ReadFromJsonAsync<{{name}}Response>())!;
+    }
+{{/each}}
+}

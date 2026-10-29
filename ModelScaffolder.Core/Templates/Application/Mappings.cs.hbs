@@ -1,0 +1,43 @@
+{{> header}}
+using System.Linq.Expressions;
+using {{schema.namespace}}.Domain.Entities;
+
+namespace {{schema.namespace}}.Application.{{plural}};
+
+public static class {{name}}Mappings
+{
+    /// <summary>Used for reads so the database only returns the response columns.</summary>
+    public static readonly Expression<Func<{{name}}, {{name}}Response>> ToResponseExpression = x => new {{name}}Response
+    {
+{{#each properties}}
+        {{name}} = x.{{name}},
+{{/each}}
+    };
+
+    private static readonly Func<{{name}}, {{name}}Response> ToResponseCompiled = ToResponseExpression.Compile();
+
+    /// <summary>Fields the list endpoint may sort by (case-insensitive input -> property name).</summary>
+    public static readonly IReadOnlyDictionary<string, string> SortFields =
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+{{#each properties}}
+            [nameof({{../name}}.{{name}})] = nameof({{../name}}.{{name}}),
+{{/each}}
+        };
+
+    public static {{name}}Response ToResponse(this {{name}} entity) => ToResponseCompiled(entity);
+
+    public static {{name}} ToEntity(this Create{{name}}Request request) => new()
+    {
+{{#each createProperties}}
+        {{name}} = request.{{name}},
+{{/each}}
+    };
+
+    public static void ApplyTo(this Update{{name}}Request request, {{name}} entity)
+    {
+{{#each updateProperties}}
+        entity.{{name}} = request.{{name}};
+{{/each}}
+    }
+}

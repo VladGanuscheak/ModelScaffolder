@@ -1,0 +1,22 @@
+{
+  "{{schema.namespace}}.Application.{{plural}}.Create{{name}}Request": [
+{{#each createRules}}
+    {
+      "ruleName": {{json ruleName}},
+      "propertyName": {{json propertyName}},
+      "expression": {{json expression}},
+      "errorMessage": {{json errorMessage}}
+    }{{#unless @last}},{{/unless}}
+{{/each}}
+  ],
+  "{{schema.namespace}}.Application.{{plural}}.Update{{name}}Request": [
+{{#each updateRules}}
+    {
+      "ruleName": {{json ruleName}},
+      "propertyName": {{json propertyName}},
+      "expression": {{json expression}},
+      "errorMessage": {{json errorMessage}}
+    }{{#unless @last}},{{/unless}}
+{{/each}}
+  ]
+}

@@ -1,0 +1,45 @@
+{{> header}}
+using System.Text.Json;
+using ReValidator;
+using ReValidator.SetUp;
+
+namespace {{schema.namespace}}.Validation;
+
+/// <summary>
+///     Loads ReValidator rules from Rules/*-rules.json (one file per entity):
+///     { "Full.Type.Name": [ { ruleName, propertyName, expression, errorMessage } ] }.
+/// </summary>
+public static class ValidationRules
+{
+    public const string RulesFolder = "Rules";
+    public const string FilePattern = "*-rules.json";
+
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true
+    };
+
+    /// <summary>Applies every rule file. Call after the app is built (needs the root service provider).</summary>
+    public static IServiceProvider ApplyValidationRules(this IServiceProvider services, string? folder = null)
+    {
+        folder ??= Path.Combine(AppContext.BaseDirectory, RulesFolder);
+
+        foreach (var file in Directory.EnumerateFiles(folder, FilePattern).Order(StringComparer.Ordinal))
+        {
+            var models = JsonSerializer.Deserialize<Dictionary<string, DynamicReconfiguration[]>>(File.ReadAllText(file), JsonOptions) ?? [];
+
+            foreach (var (model, rules) in models)
+            {
+                foreach (var rule in rules)
+                {
+                    rule.FullPathToModel ??= model;
+                    services.ApplyReconfiguration(rule);
+                }
+            }
+        }
+
+        return services;
+    }
+}

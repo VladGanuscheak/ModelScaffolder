@@ -1,0 +1,17 @@
+// expect: MS052
+// A self-reference without "navigation" would add a property "Node" to class Node (CS0542).
+{
+  "version": 1,
+  "project": { "name": "Graph" },
+  "schemas": [
+    {
+      "name": "Network",
+      "entities": [
+        { "name": "Node", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] }
+      ],
+      "relationships": [
+        { "type": "many-to-one", "from": "Node", "to": "Node", "foreignKey": "ParentId" }
+      ]
+    }
+  ]
+}

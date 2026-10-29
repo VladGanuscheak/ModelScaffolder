@@ -1,0 +1,13 @@
+{{> header}}
+using Microsoft.AspNetCore.Authentication;
+
+namespace Authentication.Basic;
+
+public sealed class BasicAuthenticationOptions : AuthenticationSchemeOptions
+{
+    /// <summary>Realm sent in the WWW-Authenticate challenge.</summary>
+    public string Realm { get; set; } = "api";
+
+    /// <summary>Claim type each configured permission is issued as.</summary>
+    public string PermissionClaimType { get; set; } = BasicAuthenticationDefaults.PermissionClaimType;
+}

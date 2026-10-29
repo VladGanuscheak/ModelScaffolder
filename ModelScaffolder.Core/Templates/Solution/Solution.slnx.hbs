@@ -1,0 +1,22 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Authentication.Basic/Authentication.Basic.csproj" />
+  </Folder>
+{{#each schemas}}
+  <Folder Name="/src/{{name}}/">
+    <Project Path="src/{{name}}/{{name}}.Domain/{{name}}.Domain.csproj" />
+    <Project Path="src/{{name}}/{{name}}.Application/{{name}}.Application.csproj" />
+    <Project Path="src/{{name}}/{{name}}.Validation/{{name}}.Validation.csproj" />
+    <Project Path="src/{{name}}/{{name}}.Policies/{{name}}.Policies.csproj" />
+    <Project Path="src/{{name}}/{{name}}.Infrastructure/{{name}}.Infrastructure.csproj" />
+    <Project Path="src/{{name}}/{{name}}.Api/{{name}}.Api.csproj" />
+  </Folder>
+{{/each}}
+  <Folder Name="/tests/" />
+{{#each schemas}}
+  <Folder Name="/tests/{{name}}/">
+    <Project Path="tests/{{name}}/{{name}}.Application.Tests/{{name}}.Application.Tests.csproj" />
+    <Project Path="tests/{{name}}/{{name}}.Api.Tests/{{name}}.Api.Tests.csproj" />
+  </Folder>
+{{/each}}
+</Solution>

@@ -1,0 +1,74 @@
+{{> header}}
+using GenericRepository.Enums;
+using Microsoft.AspNetCore.Http.HttpResults;
+using RePolicies.AspNetCore;
+using ReValidator.Validation.MinimalApi;
+using {{schema.namespace}}.Application.{{plural}};
+using {{schema.namespace}}.Domain.Entities;
+using {{schema.namespace}}.Infrastructure.Persistence;
+using {{schema.namespace}}.Policies.Permissions;
+
+namespace {{schema.namespace}}.Api.Endpoints;
+
+public static class {{name}}Endpoints
+{
+    private const string GetByIdRouteName = $"Get{nameof({{name}})}";
+
+    public static IEndpointRouteBuilder Map{{name}}Endpoints(this IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/{{route}}")
+            .WithTags(nameof({{schema.dbContext}}.{{plural}}))
+            .RequireAuthorization();
+
+        group.MapGet("/", async Task<Results<Ok<IReadOnlyList<{{name}}Response>>, ValidationProblem>> (
+            I{{name}}Service service, string? sortBy, SortingOrder? order, CancellationToken cancellationToken) =>
+        {
+            if (sortBy is not null && !{{name}}Mappings.SortFields.ContainsKey(sortBy))
+            {
+                return TypedResults.ValidationProblem(new Dictionary<string, string[]>
+                {
+                    [nameof(sortBy)] = [$"Allowed values: {string.Join(", ", {{name}}Mappings.SortFields.Values)}."]
+                });
+            }
+
+            return TypedResults.Ok(await service.ListAsync(sortBy, order ?? SortingOrder.Asc, cancellationToken));
+        })
+        .WithPolicyModel<Get{{name}}Request>();
+
+        group.MapGet("{{idRoute}}", async Task<Results<Ok<{{name}}Response>, NotFound>> (
+            {{key.clrType}} id, I{{name}}Service service, CancellationToken cancellationToken) =>
+        {
+            var item = await service.GetAsync(id, cancellationToken);
+            return item is null ? TypedResults.NotFound() : TypedResults.Ok(item);
+        })
+        .WithPolicyModel<Get{{name}}Request>()
+        .WithName(GetByIdRouteName);
+
+        group.MapPost("/", async Task<CreatedAtRoute<{{name}}Response>> (
+            Create{{name}}Request request, I{{name}}Service service, CancellationToken cancellationToken) =>
+        {
+            var created = await service.CreateAsync(request, cancellationToken);
+            return TypedResults.CreatedAtRoute(created, GetByIdRouteName, new { id = created.{{key.name}} });
+        })
+        .WithPolicyModel<Create{{name}}Request>()
+        .AddReValidator<Create{{name}}Request>()
+        .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
+
+        group.MapPut("{{idRoute}}", async Task<Results<Ok<{{name}}Response>, NotFound>> (
+            {{key.clrType}} id, Update{{name}}Request request, I{{name}}Service service, CancellationToken cancellationToken) =>
+        {
+            var updated = await service.UpdateAsync(id, request, cancellationToken);
+            return updated is null ? TypedResults.NotFound() : TypedResults.Ok(updated);
+        })
+        .WithPolicyModel<Update{{name}}Request>()
+        .AddReValidator<Update{{name}}Request>()
+        .ProducesValidationProblem(StatusCodes.Status422UnprocessableEntity);
+
+        group.MapDelete("{{idRoute}}", async Task<Results<NoContent, NotFound>> (
+            {{key.clrType}} id, I{{name}}Service service, CancellationToken cancellationToken) =>
+            await service.DeleteAsync(id, cancellationToken) ? TypedResults.NoContent() : TypedResults.NotFound())
+        .WithPolicyModel<Delete{{name}}Request>();
+
+        return app;
+    }
+}

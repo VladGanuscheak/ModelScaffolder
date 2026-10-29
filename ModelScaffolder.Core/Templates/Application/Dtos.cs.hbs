@@ -1,0 +1,23 @@
+{{> header}}
+namespace {{schema.namespace}}.Application.{{plural}};
+
+public sealed class Create{{name}}Request
+{
+{{#each createProperties}}
+    public {{clrType}} {{name}} { get; init; }{{initializer}}
+{{/each}}
+}
+
+public sealed class Update{{name}}Request
+{
+{{#each updateProperties}}
+    public {{clrType}} {{name}} { get; init; }{{initializer}}
+{{/each}}
+}
+
+public sealed class {{name}}Response
+{
+{{#each properties}}
+    public {{clrType}} {{name}} { get; init; }{{initializer}}
+{{/each}}
+}

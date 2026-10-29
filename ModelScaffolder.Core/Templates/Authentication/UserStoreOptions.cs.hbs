@@ -1,0 +1,21 @@
+{{> header}}
+namespace Authentication.Basic;
+
+/// <summary>Users allowed to sign in, bound from configuration (by default the "Authentication" section).</summary>
+public sealed class UserStoreOptions
+{
+    public const string SectionName = "Authentication";
+
+    public List<UserAccount> Users { get; set; } = [];
+}
+
+public sealed class UserAccount
+{
+    public string UserName { get; set; } = string.Empty;
+
+    /// <summary>"PBKDF2-SHA256$iterations$salt$hash", see <see cref="Basic.PasswordHash"/>.</summary>
+    public string PasswordHash { get; set; } = string.Empty;
+
+    /// <summary>Permission claims, e.g. "Get.Store.Product".</summary>
+    public List<string> Permissions { get; set; } = [];
+}

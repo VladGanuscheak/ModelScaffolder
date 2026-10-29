@@ -1,0 +1,176 @@
+{{> header}}
+using System.Net;
+using System.Net.Http.Json;
+using {{schema.namespace}}.Application.{{plural}};
+
+namespace {{schema.namespace}}.Api.Tests;
+
+/// <summary>End-to-end tests for /api/{{route}}: HTTP status codes, payloads, validation and permissions.</summary>
+[Collection(nameof(ApiCollection))]
+public sealed class {{name}}EndpointsTests(ApiFactory factory)
+{
+    private const string Route = TestData.{{name}}Route;
+
+    private readonly HttpClient _admin = factory.CreateClientFor(ApiFactory.AdminUser);
+    private readonly HttpClient _reader = factory.CreateClientFor(ApiFactory.ReadOnlyUser);
+    private readonly HttpClient _anonymous = factory.CreateClient();
+
+    private static string ItemRoute(object id) => $"{Route}/{id}";
+
+    // ---------- Happy path ----------
+
+    [Fact]
+    public async Task Create_ReturnsCreated_AndTheItemCanBeRead()
+    {
+        var request = {{#if sampleReferences}}await TestData.New{{name}}RequestAsync(_admin){{else}}TestData.New{{name}}Request(){{/if}};
+
+        var response = await _admin.PostAsJsonAsync(Route, request);
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        Assert.NotNull(response.Headers.Location);
+        var created = await response.Content.ReadFromJsonAsync<{{name}}Response>();
+        Assert.NotNull(created);
+{{#each createProperties}}
+        Assert.Equal(request.{{name}}, created.{{name}});
+{{/each}}
+
+        var fetched = await _admin.GetFromJsonAsync<{{name}}Response>(ItemRoute(created.{{key.name}}));
+        Assert.NotNull(fetched);
+        Assert.Equal(created.{{key.name}}, fetched.{{key.name}});
+    }
+
+    [Fact]
+    public async Task List_ReturnsCreatedItem_SortedDescending()
+    {
+        var created = await TestData.Create{{name}}Async(_admin);
+
+        var items = await _admin.GetFromJsonAsync<List<{{name}}Response>>($"{Route}?sortBy={{sortSample}}&order=Desc");
+
+        Assert.NotNull(items);
+        Assert.Contains(items, item => item.{{key.name}} == created.{{key.name}});
+    }
+
+    [Fact]
+    public async Task Update_ReturnsOk_AndPersistsChanges()
+    {
+        var created = await TestData.Create{{name}}Async(_admin);
+        var request = TestData.Update{{name}}Request({{#if references}}created{{/if}});
+
+        var response = await _admin.PutAsJsonAsync(ItemRoute(created.{{key.name}}), request);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var fetched = await _admin.GetFromJsonAsync<{{name}}Response>(ItemRoute(created.{{key.name}}));
+        Assert.NotNull(fetched);
+{{#each updateProperties}}
+        Assert.Equal(request.{{name}}, fetched.{{name}});
+{{/each}}
+    }
+
+    [Fact]
+    public async Task Delete_ReturnsNoContent_AndTheItemIsGone()
+    {
+        var created = await TestData.Create{{name}}Async(_admin);
+
+        var response = await _admin.DeleteAsync(ItemRoute(created.{{key.name}}));
+
+        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await _admin.GetAsync(ItemRoute(created.{{key.name}}))).StatusCode);
+    }
+
+    // ---------- Not found / bad input ----------
+
+    [Fact]
+    public async Task Get_UnknownId_ReturnsNotFound()
+    {
+        var response = await _admin.GetAsync(ItemRoute({{missingIdValue}}));
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Update_UnknownId_ReturnsNotFound()
+    {
+{{#if references}}
+        var created = await TestData.Create{{name}}Async(_admin);
+
+{{/if}}
+        var response = await _admin.PutAsJsonAsync(ItemRoute({{missingIdValue}}), TestData.Update{{name}}Request({{#if references}}created{{/if}}));
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task List_WithUnknownSortField_ReturnsBadRequest()
+    {
+        var response = await _admin.GetAsync($"{Route}?sortBy=doesNotExist");
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+{{#if createRules}}
+
+    [Fact]
+    public async Task Create_WithInvalidBody_ReturnsUnprocessableEntity_WithErrors()
+    {
+        var response = await _admin.PostAsJsonAsync(Route, new { });
+
+        Assert.Equal(HttpStatusCode.UnprocessableEntity, response.StatusCode);
+        var problem = await response.Content.ReadFromJsonAsync<ValidationProblem>();
+        Assert.NotNull(problem);
+        Assert.NotEmpty(problem.Errors);
+    }
+{{/if}}
+
+    // ---------- Authentication and permissions ----------
+
+    [Fact]
+    public async Task Request_WithoutCredentials_ReturnsUnauthorized()
+    {
+        var response = await _anonymous.GetAsync(Route);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task Request_WithWrongPassword_ReturnsUnauthorized()
+    {
+        var client = factory.CreateClientFor(ApiFactory.AdminUser, password: "wrong-password");
+
+        var response = await client.GetAsync(Route);
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReadOnlyUser_CanList()
+    {
+        var response = await _reader.GetAsync(Route);
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReadOnlyUser_CannotCreate_ReturnsForbidden()
+    {
+        var request = {{#if sampleReferences}}await TestData.New{{name}}RequestAsync(_admin){{else}}TestData.New{{name}}Request(){{/if}};
+
+        var response = await _reader.PostAsJsonAsync(Route, request);
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task ReadOnlyUser_CannotDelete_ReturnsForbidden()
+    {
+        var created = await TestData.Create{{name}}Async(_admin);
+
+        var response = await _reader.DeleteAsync(ItemRoute(created.{{key.name}}));
+
+        Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+    }
+
+    /// <summary>Shape of the 422 body produced by ReValidator (RFC 7807 validation problem).</summary>
+    private sealed class ValidationProblem
+    {
+        public Dictionary<string, string[]> Errors { get; set; } = [];
+    }
+}

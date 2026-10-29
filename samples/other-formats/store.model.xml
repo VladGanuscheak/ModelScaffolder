@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- expect: MS000 -->
+<!-- XML is not supported. -->
+<model version="1">
+  <project name="Store" />
+  <schemas>
+    <schema name="Store">
+      <entity name="Category" plural="Categories">
+        <property name="Id" type="int" key="true" generated="true" />
+      </entity>
+    </schema>
+  </schemas>
+</model>

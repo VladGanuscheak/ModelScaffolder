@@ -1,0 +1,20 @@
+{{> header}}
+using {{schema.namespace}}.Policies.Permissions;
+
+namespace {{schema.namespace}}.Policies;
+
+/// <summary>Permission claims of the {{schema.name}} schema. Claim values follow "{Action}.{Schema}.{Entity}".</summary>
+public static class {{schema.name}}Permissions
+{
+    /// <summary>Claim type that carries a permission.</summary>
+    public const string ClaimType = "permission";
+
+    public const string Schema = "{{schema.name}}";
+
+    public static IReadOnlyList<string> All { get; } =
+    [
+{{#each schema.entities}}
+        .. {{name}}Permissions.All,
+{{/each}}
+    ];
+}

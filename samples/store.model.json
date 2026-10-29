@@ -1,0 +1,77 @@
+// expect: success
+{
+  "version": 1,
+  "project": {
+    "name": "Store"
+  },
+  "schemas": [
+    {
+      "name": "Store",
+      "entities": [
+        {
+          "name": "Category",
+          "plural": "Categories",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "Name", "type": "string", "required": true, "maxLength": 100, "unique": true },
+            { "name": "Description", "type": "string", "maxLength": 1000 }
+          ]
+        },
+        {
+          "name": "Product",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "Name", "type": "string", "required": true, "maxLength": 200 },
+            { "name": "Price", "type": "decimal", "required": true, "minimum": 0, "precision": 18, "scale": 2 },
+            { "name": "Stock", "type": "int", "required": true, "minimum": 0 },
+            { "name": "ReleasedOn", "type": "DateOnly" }
+          ]
+        }
+      ],
+      "relationships": [
+        {
+          "type": "many-to-one",
+          "from": "Product",
+          "to": "Category",
+          "foreignKey": "CategoryId",
+          "navigation": "Category",
+          "inverseNavigation": "Products",
+          "required": true,
+          "onDelete": "Restrict"
+        }
+      ]
+    },
+    {
+      "name": "Procurements",
+      "entities": [
+        {
+          "name": "Supplier",
+          "properties": [
+            { "name": "Id", "type": "Guid", "key": true, "generated": true },
+            { "name": "Name", "type": "string", "required": true, "maxLength": 200, "unique": true },
+            { "name": "Email", "type": "string", "maxLength": 320 }
+          ]
+        },
+        {
+          "name": "PurchaseOrder",
+          "properties": [
+            { "name": "Id", "type": "Guid", "key": true, "generated": true },
+            { "name": "Number", "type": "string", "required": true, "minLength": 3, "maxLength": 30, "unique": true },
+            { "name": "OrderedAt", "type": "DateTimeOffset", "required": true },
+            { "name": "Total", "type": "decimal", "required": true, "minimum": 0.01 }
+          ]
+        }
+      ],
+      "relationships": [
+        {
+          "type": "many-to-one",
+          "from": "PurchaseOrder",
+          "to": "Supplier",
+          "inverseNavigation": "PurchaseOrders",
+          "required": true,
+          "onDelete": "Cascade"
+        }
+      ]
+    }
+  ]
+}

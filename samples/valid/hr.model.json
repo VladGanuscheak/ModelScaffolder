@@ -1,0 +1,73 @@
+// expect: success
+// Two schemas (two slices, two APIs): an optional self-reference (Employee.Manager),
+// unique values of several types, decimals with precision/scale and a client-assigned long key.
+{
+  "version": 1,
+  "project": { "name": "Hr" },
+  "schemas": [
+    {
+      "name": "Staff",
+      "entities": [
+        {
+          "name": "Department",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "Name", "type": "string", "required": true, "maxLength": 100, "unique": true },
+            { "name": "Code", "type": "string", "required": true, "minLength": 2, "maxLength": 10, "unique": true }
+          ]
+        },
+        {
+          "name": "Employee",
+          "properties": [
+            { "name": "Id", "type": "Guid", "key": true, "generated": true },
+            { "name": "FirstName", "type": "string", "required": true, "maxLength": 100 },
+            { "name": "LastName", "type": "string", "required": true, "maxLength": 100 },
+            { "name": "Email", "type": "string", "required": true, "maxLength": 320, "unique": true },
+            { "name": "HiredOn", "type": "DateOnly", "required": true },
+            { "name": "Salary", "type": "decimal", "required": true, "minimum": 0, "precision": 12, "scale": 2 },
+            { "name": "IsActive", "type": "bool", "required": true }
+          ]
+        }
+      ],
+      "relationships": [
+        { "type": "many-to-one", "from": "Employee", "to": "Department", "inverseNavigation": "Employees", "required": true, "onDelete": "Restrict" },
+        {
+          "type": "many-to-one",
+          "from": "Employee",
+          "to": "Employee",
+          "foreignKey": "ManagerId",
+          "navigation": "Manager",
+          "inverseNavigation": "Reports",
+          "onDelete": "SetNull"
+        }
+      ]
+    },
+    {
+      "name": "Payroll",
+      "entities": [
+        {
+          "name": "PayGrade",
+          "properties": [
+            { "name": "Id", "type": "long", "key": true },
+            { "name": "Title", "type": "string", "required": true, "maxLength": 50 },
+            { "name": "MinAmount", "type": "decimal", "minimum": 0, "precision": 10, "scale": 2 },
+            { "name": "MaxAmount", "type": "decimal", "precision": 10, "scale": 2 }
+          ]
+        },
+        {
+          "name": "Payslip",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "Period", "type": "DateOnly", "required": true, "unique": true },
+            { "name": "Gross", "type": "decimal", "required": true, "minimum": 0, "maximum": 1000000, "precision": 12, "scale": 2 },
+            { "name": "Hours", "type": "short", "required": true, "minimum": 0, "maximum": 300 },
+            { "name": "Rate", "type": "double", "minimum": 0 }
+          ]
+        }
+      ],
+      "relationships": [
+        { "type": "many-to-one", "from": "Payslip", "to": "PayGrade", "inverseNavigation": "Payslips", "required": true, "onDelete": "Restrict" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <Nullable>enable</Nullable>
+    <LangVersion>14</LangVersion>
+    <RootNamespace>ModelScaffolder.VisualStudio</RootNamespace>
+
+    <!-- VSIX settings -->
+    <VSSDKBuildToolsAutoSetup>true</VSSDKBuildToolsAutoSetup>
+    <GeneratePkgDefFile>true</GeneratePkgDefFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectCapability Include="CreateVsixContainer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.SDK" Version="17.14.40265" ExcludeAssets="runtime" />
+    <PackageReference Include="Microsoft.VSSDK.BuildTools" Version="18.9.820" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- WPF for the dialog, WinForms only for the folder picker, DataContract JSON for the CLI result (no extra packages). -->
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Windows.Forms" />
+    <!-- MenuCommandService (base of OleMenuCommandService) lives in System.Design on .NET Framework. -->
+    <Reference Include="System.Design" />
+    <Reference Include="System.Runtime.Serialization" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <VSCTCompile Include="ModelScaffolderPackage.vsct" ResourceName="Menus.ctmenu" />
+  </ItemGroup>
+
+  <!--
+    The extension runs the generator out of process: ModelScaffolder.Cli is published into obj\cli and shipped
+    inside the VSIX under "cli\" (modelscaffold.dll + Templates). Running it with "dotnet modelscaffold.dll" keeps Handlebars.Net and
+    System.Text.Json out of the Visual Studio process. The solution builds the CLI first (BuildDependency in the slnx).
+  -->
+  <PropertyGroup>
+    <CliProject>$(MSBuildProjectDirectory)\..\ModelScaffolder.Cli\ModelScaffolder.Cli.csproj</CliProject>
+    <CliPublishDir>$(MSBuildProjectDirectory)\obj\cli\$(Configuration)</CliPublishDir>
+  </PropertyGroup>
+
+  <Target Name="PublishModelScaffolderCli" BeforeTargets="GetVsixSourceItems" Condition="'$(DesignTimeBuild)' != 'true'">
+    <RemoveDir Directories="$(CliPublishDir)" />
+    <!-- In-proc MSBuild (not "dotnet publish" via Exec): avoids inheriting Visual Studio's MSBuild environment variables. -->
+    <MSBuild Projects="$(CliProject)" Targets="Restore" Properties="Configuration=$(Configuration);_ModelScaffolderRestore=true" />
+    <MSBuild Projects="$(CliProject)" Targets="Publish" Properties="Configuration=$(Configuration);PublishDir=$(CliPublishDir)\" />
+    <ItemGroup>
+      <_ModelScaffolderCliFile Include="$(CliPublishDir)\**\*" Exclude="$(CliPublishDir)\**\*.pdb;$(CliPublishDir)\*.exe" />
+      <Content Include="@(_ModelScaffolderCliFile)">
+        <IncludeInVSIX>true</IncludeInVSIX>
+        <VSIXSubPath>cli\%(_ModelScaffolderCliFile.RecursiveDir)</VSIXSubPath>
+      </Content>
+    </ItemGroup>
+  </Target>
+
+</Project>

@@ -1,0 +1,8 @@
+// expect: MS001
+{
+  "version": 2,
+  "project": { "name": "Future" },
+  "schemas": [
+    { "name": "Sales", "entities": [ { "name": "Order", "properties": [ { "name": "Id", "type": "int", "key": true } ] } ] }
+  ]
+}

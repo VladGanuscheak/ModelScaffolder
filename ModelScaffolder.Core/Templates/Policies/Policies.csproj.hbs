@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="RePolicies" />
+    <PackageReference Include="RePolicies.AspNetCore" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../{{schema.name}}.Domain/{{schema.name}}.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- One file per policy, copied next to the API binaries (Definitions/*.policy.json); edit there and restart to apply. -->
+    <None Include="Definitions/*.policy.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

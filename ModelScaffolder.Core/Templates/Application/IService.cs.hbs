@@ -1,0 +1,19 @@
+{{> header}}
+using GenericRepository.Enums;
+
+namespace {{schema.namespace}}.Application.{{plural}};
+
+public interface I{{name}}Service
+{
+    Task<IReadOnlyList<{{name}}Response>> ListAsync(string? sortBy = null, SortingOrder order = SortingOrder.Asc, CancellationToken cancellationToken = default);
+
+    Task<{{name}}Response?> GetAsync({{key.clrType}} id, CancellationToken cancellationToken = default);
+
+    Task<{{name}}Response> CreateAsync(Create{{name}}Request request, CancellationToken cancellationToken = default);
+
+    /// <returns>The updated item, or null if it does not exist.</returns>
+    Task<{{name}}Response?> UpdateAsync({{key.clrType}} id, Update{{name}}Request request, CancellationToken cancellationToken = default);
+
+    /// <returns>False if it does not exist.</returns>
+    Task<bool> DeleteAsync({{key.clrType}} id, CancellationToken cancellationToken = default);
+}

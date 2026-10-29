@@ -1,0 +1,20 @@
+// expect: MS016
+// "Task" would hide System.Threading.Tasks.Task in the generated services; "System" as a schema would shadow the System namespace (MS009).
+{
+  "version": 1,
+  "project": { "name": "Reserved" },
+  "schemas": [
+    {
+      "name": "Planning",
+      "entities": [
+        { "name": "Task", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] }
+      ]
+    },
+    {
+      "name": "System",
+      "entities": [
+        { "name": "Setting", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] }
+      ]
+    }
+  ]
+}

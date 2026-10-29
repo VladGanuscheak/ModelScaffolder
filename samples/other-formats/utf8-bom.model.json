@@ -1,0 +1,21 @@
+﻿// expect: success
+// Saved as UTF-8 with BOM: the reader detects the byte order mark.
+{
+  "version": 1,
+  "project": { "name": "Papers" },
+  "schemas": [
+    {
+      "name": "Archive",
+      "entities": [
+        {
+          "name": "Document",
+          "properties": [
+            { "name": "Id", "type": "Guid", "key": true, "generated": true },
+            { "name": "Title", "type": "string", "required": true, "maxLength": 200 },
+            { "name": "Author", "type": "string", "maxLength": 100 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+// expect: MS000
+// JSON5 / JavaScript object syntax (unquoted keys, single quotes) is not JSON.
+{
+  version: 1,
+  project: { name: 'Store' },
+  schemas: []
+}

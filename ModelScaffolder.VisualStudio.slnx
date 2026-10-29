@@ -1,0 +1,53 @@
+<Solution>
+  <Folder Name="/samples/">
+    <File Path="samples/README.md" />
+    <File Path="samples/store.model.json" />
+  </Folder>
+  <Folder Name="/samples/valid/">
+    <File Path="samples/valid/blog.model.json" />
+    <File Path="samples/valid/hr.model.json" />
+    <File Path="samples/valid/inventory.model.json" />
+    <File Path="samples/valid/jsonc-crlf.model.json" />
+    <File Path="samples/valid/minimal.model.json" />
+  </Folder>
+  <Folder Name="/samples/invalid/">
+    <File Path="samples/invalid/comments-only.model.json" />
+    <File Path="samples/invalid/empty.model.json" />
+    <File Path="samples/invalid/invalid-constraints.model.json" />
+    <File Path="samples/invalid/names-differing-in-case.model.json" />
+    <File Path="samples/invalid/navigation-named-like-entity.model.json" />
+    <File Path="samples/invalid/no-key.model.json" />
+    <File Path="samples/invalid/not-a-model.model.json" />
+    <File Path="samples/invalid/null-entries.model.json" />
+    <File Path="samples/invalid/plural-clash.model.json" />
+    <File Path="samples/invalid/required-cycle.model.json" />
+    <File Path="samples/invalid/required-self-reference.model.json" />
+    <File Path="samples/invalid/reserved-names.model.json" />
+    <File Path="samples/invalid/shared-foreign-key.model.json" />
+    <File Path="samples/invalid/syntax-error.model.json" />
+    <File Path="samples/invalid/truncated.model.json" />
+    <File Path="samples/invalid/unknown-property.model.json" />
+    <File Path="samples/invalid/unknown-relationship-target.model.json" />
+    <File Path="samples/invalid/unknown-type.model.json" />
+    <File Path="samples/invalid/unsupported-version.model.json" />
+    <File Path="samples/invalid/wrong-value-type.model.json" />
+  </Folder>
+  <Folder Name="/samples/other-formats/">
+    <File Path="samples/other-formats/binary.model.json" />
+    <File Path="samples/other-formats/json5-style.model.json" />
+    <File Path="samples/other-formats/store.model.csv" />
+    <File Path="samples/other-formats/store.model.xml" />
+    <File Path="samples/other-formats/store.model.yaml" />
+    <File Path="samples/other-formats/utf16-bom.model.json" />
+    <File Path="samples/other-formats/utf8-bom.model.json" />
+    <File Path="samples/other-formats/yaml-content.model.json" />
+  </Folder>
+  <Project Path="ModelScaffolder.Cli/ModelScaffolder.Cli.csproj" />
+  <Project Path="ModelScaffolder.Core/ModelScaffolder.Core.csproj" />
+  <Project Path="ModelScaffolder.Core.Tests/ModelScaffolder.Core.Tests.csproj" />
+  <Project Path="ModelScaffolder.VisualStudio/ModelScaffolder.VisualStudio.csproj">
+    <!-- The VSIX bundles the published CLI; build the CLI first. -->
+    <BuildDependency Project="ModelScaffolder.Cli/ModelScaffolder.Cli.csproj" />
+    <Deploy />
+  </Project>
+</Solution>

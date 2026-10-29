@@ -1,0 +1,70 @@
+{
+  // Each entry: template -> output path (the path is a Handlebars template too).
+  // scope "solution": rendered once.            Root: { project, schemas }
+  // scope "schema":   rendered per schema.      Root: { project, schemas, schema }
+  // scope "entity":   rendered per entity.      Root: the entity's fields + { project, schema }
+  // Use "/" in paths: "\{{" is Handlebars' escape for a literal "{{".
+  "files": [
+    { "template": "Solution/Solution.slnx.hbs",            "output": "{{project.name}}.slnx" },
+    { "template": "Solution/Directory.Build.props.hbs",    "output": "Directory.Build.props" },
+    { "template": "Solution/Directory.Packages.props.hbs", "output": "Directory.Packages.props" },
+    { "template": "Solution/gitignore.hbs",                "output": ".gitignore" },
+    { "template": "Solution/README.md.hbs",                "output": "README.md" },
+    { "template": "Solution/postman_collection.json.hbs",  "output": "{{project.name}}.postman_collection.json" },
+
+    { "template": "Authentication/Authentication.Basic.csproj.hbs",       "output": "src/Authentication.Basic/Authentication.Basic.csproj" },
+    { "template": "Authentication/BasicAuthenticationDefaults.cs.hbs",    "output": "src/Authentication.Basic/BasicAuthenticationDefaults.cs" },
+    { "template": "Authentication/BasicAuthenticationOptions.cs.hbs",     "output": "src/Authentication.Basic/BasicAuthenticationOptions.cs" },
+    { "template": "Authentication/BasicAuthenticationHandler.cs.hbs",     "output": "src/Authentication.Basic/BasicAuthenticationHandler.cs" },
+    { "template": "Authentication/UserStoreOptions.cs.hbs",               "output": "src/Authentication.Basic/UserStoreOptions.cs" },
+    { "template": "Authentication/PasswordHash.cs.hbs",                   "output": "src/Authentication.Basic/PasswordHash.cs" },
+    { "template": "Authentication/ServiceCollectionExtensions.cs.hbs",    "output": "src/Authentication.Basic/ServiceCollectionExtensions.cs" },
+
+    { "template": "Domain/Domain.csproj.hbs", "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Domain/{{schema.name}}.Domain.csproj" },
+    { "template": "Domain/Entity.cs.hbs",     "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Domain/Entities/{{name}}.cs" },
+
+    { "template": "Infrastructure/Infrastructure.csproj.hbs",  "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Infrastructure/{{schema.name}}.Infrastructure.csproj" },
+    { "template": "Infrastructure/DbContext.cs.hbs",           "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Infrastructure/Persistence/{{schema.dbContext}}.cs" },
+    { "template": "Infrastructure/DependencyInjection.cs.hbs", "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Infrastructure/DependencyInjection.cs" },
+    { "template": "Infrastructure/EntityConfiguration.cs.hbs", "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Infrastructure/Persistence/Configurations/{{name}}Configuration.cs" },
+
+    { "template": "Validation/Validation.csproj.hbs",  "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Validation/{{schema.name}}.Validation.csproj" },
+    { "template": "Validation/ValidationRules.cs.hbs", "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Validation/ValidationRules.cs" },
+    { "template": "Validation/rules.json.hbs",         "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Validation/Rules/{{kebabName}}-rules.json" },
+
+    { "template": "Policies/Policies.csproj.hbs",             "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Policies/{{schema.name}}.Policies.csproj" },
+    { "template": "Policies/SchemaPermissions.cs.hbs",        "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Policies/{{schema.name}}Permissions.cs" },
+    { "template": "Policies/PolicyRegistration.cs.hbs",       "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Policies/PolicyRegistration.cs" },
+    { "template": "Policies/EntityPermissions.cs.hbs",        "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Policies/Permissions/{{name}}Permissions.cs" },
+    { "template": "Policies/policy.json.hbs", "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Policies/Definitions/{{kebabName}}-{{file}}.policy.json",
+      "variables": { "action": "Get", "file": "get", "model": "{{schema.namespace}}.Policies.Permissions.Get{{name}}Request" } },
+    { "template": "Policies/policy.json.hbs", "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Policies/Definitions/{{kebabName}}-{{file}}.policy.json",
+      "variables": { "action": "Create", "file": "create", "model": "{{schema.namespace}}.Application.{{plural}}.Create{{name}}Request" } },
+    { "template": "Policies/policy.json.hbs", "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Policies/Definitions/{{kebabName}}-{{file}}.policy.json",
+      "variables": { "action": "Update", "file": "update", "model": "{{schema.namespace}}.Application.{{plural}}.Update{{name}}Request" } },
+    { "template": "Policies/policy.json.hbs", "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Policies/Definitions/{{kebabName}}-{{file}}.policy.json",
+      "variables": { "action": "Delete", "file": "delete", "model": "{{schema.namespace}}.Policies.Permissions.Delete{{name}}Request" } },
+
+    { "template": "Application/Application.csproj.hbs",     "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Application/{{schema.name}}.Application.csproj" },
+    { "template": "Application/DependencyInjection.cs.hbs", "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Application/DependencyInjection.cs" },
+    { "template": "Application/Dtos.cs.hbs",                "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Application/{{plural}}/{{name}}Dtos.cs" },
+    { "template": "Application/Mappings.cs.hbs",            "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Application/{{plural}}/{{name}}Mappings.cs" },
+    { "template": "Application/IService.cs.hbs",            "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Application/{{plural}}/I{{name}}Service.cs" },
+    { "template": "Application/Service.cs.hbs",             "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Application/{{plural}}/{{name}}Service.cs" },
+
+    { "template": "Tests/Application.Tests.csproj.hbs", "scope": "schema", "output": "tests/{{schema.name}}/{{schema.name}}.Application.Tests/{{schema.name}}.Application.Tests.csproj" },
+    { "template": "Tests/ServiceTests.cs.hbs",          "scope": "entity", "output": "tests/{{schema.name}}/{{schema.name}}.Application.Tests/{{name}}ServiceTests.cs" },
+
+    { "template": "ApiTests/Api.Tests.csproj.hbs",   "scope": "schema", "output": "tests/{{schema.name}}/{{schema.name}}.Api.Tests/{{schema.name}}.Api.Tests.csproj" },
+    { "template": "ApiTests/ApiFactory.cs.hbs",      "scope": "schema", "output": "tests/{{schema.name}}/{{schema.name}}.Api.Tests/ApiFactory.cs" },
+    { "template": "ApiTests/TestData.cs.hbs",        "scope": "schema", "output": "tests/{{schema.name}}/{{schema.name}}.Api.Tests/TestData.cs" },
+    { "template": "ApiTests/EndpointsTests.cs.hbs",  "scope": "entity", "output": "tests/{{schema.name}}/{{schema.name}}.Api.Tests/{{name}}EndpointsTests.cs" },
+
+    { "template": "Api/requests.http.hbs",       "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Api/{{schema.name}}.Api.http" },
+    { "template": "Api/Api.csproj.hbs",          "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Api/{{schema.name}}.Api.csproj" },
+    { "template": "Api/Program.cs.hbs",          "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Api/Program.cs" },
+    { "template": "Api/appsettings.json.hbs",    "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Api/appsettings.json" },
+    { "template": "Api/launchSettings.json.hbs", "scope": "schema", "output": "src/{{schema.name}}/{{schema.name}}.Api/Properties/launchSettings.json" },
+    { "template": "Api/Endpoints.cs.hbs",        "scope": "entity", "output": "src/{{schema.name}}/{{schema.name}}.Api/Endpoints/{{name}}Endpoints.cs" }
+  ]
+}

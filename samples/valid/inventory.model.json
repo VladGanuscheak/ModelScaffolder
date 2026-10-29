@@ -1,0 +1,45 @@
+// expect: success
+// Every scalar type with most constraints: ranges on int/short/double, decimal precision/scale,
+// a unique long that is not a key, string min/max lengths, and an optional relationship.
+{
+  "version": 1,
+  "project": { "name": "Inventory" },
+  "schemas": [
+    {
+      "name": "Warehouse",
+      "entities": [
+        {
+          "name": "Location",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "Aisle", "type": "string", "required": true, "maxLength": 5 },
+            { "name": "Shelf", "type": "short", "required": true, "minimum": 1, "maximum": 50 },
+            { "name": "Code", "type": "string", "required": true, "maxLength": 20, "unique": true }
+          ]
+        },
+        {
+          "name": "Item",
+          "properties": [
+            { "name": "Id", "type": "Guid", "key": true, "generated": true },
+            { "name": "Sku", "type": "string", "required": true, "minLength": 4, "maxLength": 12, "unique": true },
+            { "name": "Name", "type": "string", "required": true, "maxLength": 200 },
+            { "name": "Weight", "type": "double", "minimum": 0.01, "maximum": 1000 },
+            { "name": "Volume", "type": "float" },
+            { "name": "Quantity", "type": "int", "required": true, "minimum": 0 },
+            { "name": "ReorderLevel", "type": "short", "minimum": 1, "maximum": 100 },
+            { "name": "Price", "type": "decimal", "required": true, "minimum": 0.5, "precision": 8, "scale": 2 },
+            { "name": "Barcode", "type": "long", "unique": true },
+            { "name": "Active", "type": "bool", "required": true },
+            { "name": "ExpiresOn", "type": "DateOnly" },
+            { "name": "LastCountedAt", "type": "DateTime" },
+            { "name": "ReceivedAt", "type": "DateTimeOffset", "required": true },
+            { "name": "PickTime", "type": "TimeOnly" }
+          ]
+        }
+      ],
+      "relationships": [
+        { "type": "many-to-one", "from": "Item", "to": "Location", "foreignKey": "LocationId", "inverseNavigation": "Items", "onDelete": "SetNull" }
+      ]
+    }
+  ]
+}

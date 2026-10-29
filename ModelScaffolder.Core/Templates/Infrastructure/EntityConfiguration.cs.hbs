@@ -1,0 +1,46 @@
+{{> header}}
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using {{schema.namespace}}.Domain.Entities;
+
+namespace {{schema.namespace}}.Infrastructure.Persistence.Configurations;
+
+public sealed class {{name}}Configuration : IEntityTypeConfiguration<{{name}}>
+{
+    public void Configure(EntityTypeBuilder<{{name}}> builder)
+    {
+        builder.ToTable(nameof({{schema.dbContext}}.{{plural}}));
+
+        builder.HasKey(x => x.{{key.name}});
+        builder.Property(x => x.{{key.name}})
+{{#if key.isGenerated}}
+            .ValueGeneratedOnAdd();
+{{else}}
+            .ValueGeneratedNever();
+{{/if}}
+{{#each properties}}
+{{#unless isKey}}
+
+        builder.Property(x => x.{{name}}){{#if isRequired}}
+            .IsRequired(){{/if}}{{#if maxLength}}
+            .HasMaxLength({{maxLength}}){{/if}}{{#if isDecimal}}
+            .HasPrecision({{precision}}, {{scale}}){{/if}};
+{{/unless}}
+{{/each}}
+{{#each properties}}
+{{#if isUnique}}
+
+        builder.HasIndex(x => x.{{name}})
+            .IsUnique();
+{{/if}}
+{{/each}}
+{{#each references}}
+
+        builder.HasOne(x => x.{{navigation}})
+            .WithMany({{#if inverseNavigation}}x => x.{{inverseNavigation}}{{/if}})
+            .HasForeignKey(x => x.{{foreignKey}})
+            .IsRequired({{#if isRequired}}true{{else}}false{{/if}}){{#if onDelete}}
+            .OnDelete(DeleteBehavior.{{onDelete}}){{/if}};
+{{/each}}
+    }
+}

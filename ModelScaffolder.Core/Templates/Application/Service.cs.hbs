@@ -1,0 +1,63 @@
+{{> header}}
+using GenericRepository.Enums;
+using GenericRepository.Interfaces;
+using GenericRepository.Options;
+using {{schema.namespace}}.Domain.Entities;
+
+namespace {{schema.namespace}}.Application.{{plural}};
+
+public sealed class {{name}}Service(IGenericAsyncRepository<{{name}}> repository) : I{{name}}Service
+{
+    public async Task<IReadOnlyList<{{name}}Response>> ListAsync(string? sortBy = null, SortingOrder order = SortingOrder.Asc, CancellationToken cancellationToken = default)
+    {
+        var options = new ComplexDataModelOptions<{{name}}, {{name}}Response>
+        {
+            Projection = {{name}}Mappings.ToResponseExpression,
+            SortingFieldName = ResolveSortField(sortBy),
+            SortingOrder = order
+        };
+
+        var items = await repository.ListAsync(options, cancellationToken);
+        return [.. items];
+    }
+
+    public async Task<{{name}}Response?> GetAsync({{key.clrType}} id, CancellationToken cancellationToken = default) =>
+        await repository.GetAsync(new ComplexDataModelOptions<{{name}}, {{name}}Response>
+        {
+            EntitySearchClause = x => x.{{key.name}} == id,
+            Projection = {{name}}Mappings.ToResponseExpression
+        }, cancellationToken);
+
+    public async Task<{{name}}Response> CreateAsync(Create{{name}}Request request, CancellationToken cancellationToken = default)
+    {
+        var entity = request.ToEntity();
+        await repository.CreateAsync(entity, cancellationToken);
+        return entity.ToResponse();
+    }
+
+    public async Task<{{name}}Response?> UpdateAsync({{key.clrType}} id, Update{{name}}Request request, CancellationToken cancellationToken = default)
+    {
+        {{name}}? entity = await repository.GetAsync(new DataModelOptions<{{name}}> { EntitySearchClause = x => x.{{key.name}} == id }, cancellationToken);
+        if (entity is null)
+            return null;
+
+        request.ApplyTo(entity);
+        await repository.UpdateAsync(x => x.{{key.name}} == id, entity, cancellationToken);
+        return entity.ToResponse();
+    }
+
+    public async Task<bool> DeleteAsync({{key.clrType}} id, CancellationToken cancellationToken = default)
+    {
+        if (await GetAsync(id, cancellationToken) is null)
+            return false;
+
+        await repository.DeleteAsync(x => x.{{key.name}} == id, cancellationToken);
+        return true;
+    }
+
+    // Unknown fields are rejected here; the endpoint turns that into a 400 before calling the service.
+    private static string ResolveSortField(string? sortBy) =>
+        sortBy is null ? nameof({{name}}.{{key.name}})
+        : {{name}}Mappings.SortFields.TryGetValue(sortBy, out var field) ? field
+        : throw new ArgumentException($"Cannot sort by '{sortBy}'.", nameof(sortBy));
+}

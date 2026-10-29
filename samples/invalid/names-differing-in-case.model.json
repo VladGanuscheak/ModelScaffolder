@@ -1,0 +1,15 @@
+// expect: MS011
+// "Order" and "order" are different C# types, but their files (Order.cs / order.cs) collide on Windows.
+{
+  "version": 1,
+  "project": { "name": "Cases" },
+  "schemas": [
+    {
+      "name": "Sales",
+      "entities": [
+        { "name": "Order", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] },
+        { "name": "order", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] }
+      ]
+    }
+  ]
+}

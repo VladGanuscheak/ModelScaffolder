@@ -1,0 +1,34 @@
+<Project>
+  <!-- Central package versions. Bump here, not in individual projects. -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Lets the versions below also override transitive dependencies (used for security pins). -->
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="GenericRepository.Contracts" Version="10.0.0" />
+    <PackageVersion Include="GenericRepository.Services.EFCore" Version="10.0.0" />
+    <PackageVersion Include="ReValidator" Version="1.0.1" />
+    <PackageVersion Include="ReValidator.Validation.MinimalApi" Version="1.0.1" />
+    <PackageVersion Include="RePolicies" Version="1.0.0" />
+    <PackageVersion Include="RePolicies.AspNetCore" Version="1.0.0" />
+    <!-- GenericRepository.Services.EFCore 10.0.0 requires EF Core >= 10.0.10. -->
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="10.0.10" />
+    <PackageVersion Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.0" />
+    <!-- EF Core 10.0.10 needs Microsoft.Extensions.* >= 10.0.10; a lower pin here would be a downgrade error (NU1109). -->
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.10" />
+    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="10.0.0" />
+    <!-- Security pin: Microsoft.AspNetCore.OpenApi 10.0.0 brings Microsoft.OpenApi 2.0.0 (GHSA-v5pm-xwqc-g5wc, fixed in 2.7.5). -->
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.7.5" />
+    <!-- Tests -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageVersion Include="xunit" Version="2.9.3" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageVersion Include="NSubstitute" Version="5.3.0" />
+    <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.4.0" />
+    <!-- Security pin: Testcontainers 4.4.0 brings SSH.NET 2024.2.0 (GHSA-mggc-4xg6-vcxf, GHSA-q939-rpr3-3284, fixed in 2026.0.0). -->
+    <PackageVersion Include="SSH.NET" Version="2026.0.0" />
+  </ItemGroup>
+</Project>

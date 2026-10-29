@@ -1,0 +1,24 @@
+// expect: MS038
+// Several impossible constraints; each is reported with its own line.
+{
+  "version": 1,
+  "project": { "name": "Constraints" },
+  "schemas": [
+    {
+      "name": "Sales",
+      "entities": [
+        {
+          "name": "Order",
+          "properties": [
+            { "name": "Id", "type": "int", "key": true, "generated": true },
+            { "name": "Total", "type": "decimal", "precision": 4, "scale": 6 },
+            { "name": "Code", "type": "string", "minLength": 10, "maxLength": 5 },
+            { "name": "Lines", "type": "int", "minimum": 2.2, "maximum": 2.8 },
+            { "name": "Rating", "type": "int", "maxLength": 5 },
+            { "name": "Note", "type": "string", "maxLength": 0 }
+          ]
+        }
+      ]
+    }
+  ]
+}

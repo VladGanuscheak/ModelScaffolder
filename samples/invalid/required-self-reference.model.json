@@ -1,0 +1,17 @@
+// expect: MS048
+// Every category needs a parent category, so the first one can never be created. Make it optional.
+{
+  "version": 1,
+  "project": { "name": "Tree" },
+  "schemas": [
+    {
+      "name": "Catalog",
+      "entities": [
+        { "name": "Category", "plural": "Categories", "properties": [ { "name": "Id", "type": "int", "key": true, "generated": true } ] }
+      ],
+      "relationships": [
+        { "type": "many-to-one", "from": "Category", "to": "Category", "foreignKey": "ParentId", "navigation": "Parent", "required": true }
+      ]
+    }
+  ]
+}
