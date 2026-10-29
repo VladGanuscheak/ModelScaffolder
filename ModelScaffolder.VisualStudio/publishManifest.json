@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json.schemastore.org/vsix-publish",
+  "categories": [ "scaffolding", "coding" ],
+  "identity": {
+    "internalName": "ModelScaffolder"
+  },
+  "overview": "README.md",
+  "priceCategory": "free",
+  "publisher": "YOUR-MARKETPLACE-PUBLISHER-ID",
+  "private": false,
+  "qna": true
+}
