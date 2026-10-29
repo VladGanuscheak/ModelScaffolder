@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="ModelScaffolder.VisualStudio.d233648b-71fe-41e5-9a16-4a40a96f2626" Version="1.0.0" Language="en-US" Publisher="Vlad Ganuscheak" />
+    <Identity Id="ModelScaffolder.VisualStudio.d233648b-71fe-41e5-9a16-4a40a96f2626" Version="1.0.0" Language="en-US" Publisher="Ganușceac Vlad" />
     <DisplayName>ModelScaffolder</DisplayName>
     <Description xml:space="preserve">Scaffolds a layered .NET 10 solution (Domain, Infrastructure, Validation, Policies, Application, Minimal API, tests, Postman collection) from a JSON model. Right-click a *.model.json in Solution Explorer and choose "Scaffold Solution...".</Description>
     <Icon>Resources\icon.png</Icon>
