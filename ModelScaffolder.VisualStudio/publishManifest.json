@@ -1,10 +1,31 @@
 {
   "$schema": "http://json.schemastore.org/vsix-publish",
-  "categories": [ "scaffolding", "coding" ],
+  "categories": [
+    "scaffolding",
+    "coding"
+  ],
   "identity": {
     "internalName": "ModelScaffolder"
   },
-  "overview": "README.md",
+  "overview": "../README.md",
+  "assetFiles": [
+    {
+      "pathOnDisk": "../images/context-menu.png",
+      "targetPath": "images/context-menu.png"
+    },
+    {
+      "pathOnDisk": "../images/scaffold-dialog.png",
+      "targetPath": "images/scaffold-dialog.png"
+    },
+    {
+      "pathOnDisk": "../images/open-solution.png",
+      "targetPath": "images/open-solution.png"
+    },
+    {
+      "pathOnDisk": "../images/generated-code.png",
+      "targetPath": "images/generated-code.png"
+    }
+  ],
   "priceCategory": "free",
   "publisher": "YOUR-MARKETPLACE-PUBLISHER-ID",
   "private": false,

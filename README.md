@@ -7,6 +7,8 @@ after generation.
 
 Right-click a `*.model.json` file in Solution Explorer and choose **Scaffold Solution...**
 
+![The Scaffold Solution command in the context menu of a .model.json file](images/context-menu.png)
+
 ## Features
 
 - **One model, many slices.** Each schema in the model becomes its own vertical slice with its own API and
@@ -43,9 +45,13 @@ Right-click a `*.model.json` file in Solution Explorer and choose **Scaffold Sol
 3. In the dialog, check the output folder and enter a user name and password for the default system user.
    - The user gets every permission of every schema.
    - Only a PBKDF2 hash of the password is written; the password itself is never stored.
+
+   ![The Scaffold Solution dialog](images/scaffold-dialog.png)
 4. Click **Generate**. The *ModelScaffolder* pane of the Output window lists the generated files; any problems
    appear in the Error List.
 5. Open the generated `.slnx` when asked, then build and run `dotnet test` (Docker must be running).
+
+   ![Prompt to open the generated solution](images/open-solution.png)
 
 The dialog remembers the output folder, templates folder, target framework and user name for each model file.
 
@@ -163,6 +169,11 @@ tests/
     Catalog.Application.Tests/     xUnit + NSubstitute unit tests
     Catalog.Api.Tests/             HTTP integration tests (WebApplicationFactory + Testcontainers PostgreSQL)
 ```
+
+The code is plain, readable C#. For example, the entity configuration generated from the model's `required`,
+`maxLength` and `unique` settings:
+
+![A generated EF Core entity configuration](images/generated-code.png)
 
 Every entity gets these endpoints:
 
