@@ -34,6 +34,8 @@
 
   <ItemGroup>
     <VSCTCompile Include="ModelScaffolderPackage.vsct" ResourceName="Menus.ctmenu" />
+    <!-- Marketplace / Extensions dialog icon (128x128) and preview image (200x200), referenced by the .vsixmanifest. -->
+    <Content Include="Resources\icon.png;Resources\preview.png" IncludeInVSIX="true" />
   </ItemGroup>
 
   <!--

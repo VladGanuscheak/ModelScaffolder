@@ -1,3 +1,5 @@
+<img src="images/logo.png" alt="ModelScaffolder logo" width="128" align="right" />
+
 # ModelScaffolder
 
 Describe your domain in one JSON file and get a complete, layered **.NET 10** solution: entities, EF Core

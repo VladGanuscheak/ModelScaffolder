@@ -4,6 +4,8 @@
     <Identity Id="ModelScaffolder.VisualStudio.d233648b-71fe-41e5-9a16-4a40a96f2626" Version="1.0.0" Language="en-US" Publisher="Vlad Ganuscheak" />
     <DisplayName>ModelScaffolder</DisplayName>
     <Description xml:space="preserve">Scaffolds a layered .NET 10 solution (Domain, Infrastructure, Validation, Policies, Application, Minimal API, tests, Postman collection) from a JSON model. Right-click a *.model.json in Solution Explorer and choose "Scaffold Solution...".</Description>
+    <Icon>Resources\icon.png</Icon>
+    <PreviewImage>Resources\preview.png</PreviewImage>
     <Tags>scaffolding; code generation; minimal api; ef core; handlebars</Tags>
   </Metadata>
   <Installation>
